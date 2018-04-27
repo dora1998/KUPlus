@@ -1,0 +1,26 @@
+{
+  "name": "KUPlus Extensions",
+  "description" : "KULASISなどの京都大学学務システムの機能を拡張する非公式拡張機能です。作者は、本拡張機能を使用したことによるいかなる損害に対しても一切責任を負いません。自己責任で使用してください。",
+  "version": "1.0.0",
+  "manifest_version": 2,
+
+  "content_scripts": [
+        {
+            "run_at": "document_end"
+          , "matches": [
+              "https://www.k.kyoto-u.ac.jp/student/la/*"
+            ]
+           ,"js": [
+                "lib/jquery-3.3.1.min.js"
+               ,"js/main.js"
+            ]
+        }
+    ],
+  "background": {
+      "scripts": [
+          "js/background.js"
+      ],
+      "persistent": false
+  }
+
+}
