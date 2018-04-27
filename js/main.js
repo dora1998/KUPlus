@@ -20,9 +20,9 @@ function openSyllabus(url, $btn) {
   $row = $btn.parents(".odd_normal, .even_normal");
 
   fullUrl = getAbsolutePath(url);
-  $row.after('<tr class="odd_normal"><td colspan="9" style="overflow: hidden; position:relative; height:450px;">' +
-    '<iframe src="' + fullUrl + '" class="s_detail" width="1030" height="400" style="position:absolute; left: -300px; top: 0px;"></iframe>' + 
-    '<button width="100" class="s_close" style="position:absolute; top:410px; width:99%; font-size:1.5em;">＞＞ 閉じる ＜＜</button>' + 
+  $row.after('<tr class="odd_normal"><td class="table_sdetail" colspan="9">' +
+    '<iframe src="' + fullUrl + '" class="s_detail" width="1030" height="400"></iframe>' + 
+    '<button width="100" class="s_close">＞＞ 閉じる ＜＜</button>' + 
     '</td></tr>');
   $(".s_close").click(function() {
     closeSyllabus($(this));
@@ -45,7 +45,7 @@ function decoTimeTable() {
         if (res[j][k] != null) {
           var $tclass = $tday.children("td").eq(1 + k);
           $tclass.attr("style", "position: relative;");
-          $tclass.append('<div class="tip_class" style="position: absolute; width: 700%; bottom: -2.5em; left: 0; z-index: 9999; padding: 0.3em 0.5em; color: #000; background: #fff; border-radius: 0.5em; display: none;"></div>');
+          $tclass.append('<div class="tip_class"></div>');
 
           var tcolor = res[j][k].name.startsWith("全共") ? "#87ceeb" : "#ff7f50";
           $tclass.css('background-color', tcolor);
@@ -63,7 +63,7 @@ function decoTimeTable() {
 
 /* 時間割ページ関連 */
 function initTimeTable() {
-  $("#frame").after('<iframe id="s_frame" style="display:none;"></iframe>');
+  $("#frame").after('<iframe id="s_frame""></iframe>');
   $("#s_frame").on('load', function() {
     getPlaceData();
   });

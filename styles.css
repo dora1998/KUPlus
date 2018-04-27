@@ -1,0 +1,33 @@
+.tip_class {
+    position: absolute;
+    width: 700%;
+    bottom: 2.5em;
+    left: 0;
+    z-index: 9999;
+    padding: 0.3em 0.5em;
+    color: #000;
+    background: #fff;
+    border-radius: 0.5em;
+    border: 1px solid #aaa;
+    display: none;
+}
+#s_frame {
+    display: none;
+}
+
+td.table_sdetail {
+    overflow: hidden;
+    position: relative;
+    height: 450px;
+}
+iframe.s_detail {
+    position: absolute;
+    left: -300px;
+    top: 0px;
+}
+.s_close {
+    position: absolute;
+    top: 410px;
+    width: 99%;
+    font-size: 1.5em;
+}
