@@ -2,7 +2,10 @@ init();
 
 // 初期化、ページ判定処理
 function init() {
-  if (location.href.startsWith("https://www.k.kyoto-u.ac.jp/student/la/syllabus/")) {
+  var P_SURL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/syllabus.*/;
+  var P_NOTICE = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/notice.*/;
+  var P_DEPTOP = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/department_home\/top/;
+  if (location.href.match(P_SURL) != null) {
     $("a").click(function() {
       if ($(this).attr("href").startsWith("detail")) {
         openSyllabus($(this).attr("href"), $(this));
@@ -12,6 +15,10 @@ function init() {
     decoTimeTable();
   } else if (location.href == "https://www.k.kyoto-u.ac.jp/student/la/timeslot/timeslot_list") {
     initTimeTable();
+  }
+
+  if (location.href.match(P_NOTICE) != null || location.href.match(P_DEPTOP) != null) {
+    addMyDepButton();
   }
 }
 
@@ -63,15 +70,30 @@ function decoTimeTable() {
 
 /* 時間割ページ関連 */
 function initTimeTable() {
+  // シラバス裏取得用iframe生成
   $("#frame").after('<iframe id="s_frame""></iframe>');
   $("#s_frame").on('load', function() {
     getPlaceData();
   });
+  // 教室場所表示用tr生成
   $(".timetable_filled").find("tr").after('<tr class="class_place"></tr>');
+  // クイックアクション用div生成
+  $(".timetable_filled").css("position", "relative");
+  $(".timetable_filled").append('<div class="tip_timetable">' + 
+    '<ul><li><a href="" class="tip_a_ref"><img src="/img/button_mini_general_01.gif">授業資料</a></li>' +
+    '<ul><li><a href="" class="tip_a_report"><img src="/img/button_mini_general_01.gif">レポート</a></li>' +
+    '<ul><li><a href="" class="tip_a_info"><img src="/img/button_mini_general_01.gif">授業連絡</a></li>' +
+    '</ul></div>');
+  $(".timetable_filled").hover(function() {
+    $(this).children(".tip_timetable").show();
+  }, function() {
+    $(this).children(".tip_timetable").hide();
+  });
+
+  setQuickActionLink();
   getSavedTimeTable(function(res) {
     if (res == undefined) {
       loadNewTimeTable();
-      console.log(getPlaceBox(0, 0).html());
     } else {
       loadSavedTimeTable();
     }
@@ -164,14 +186,14 @@ function loadSavedTimeTable() {
         var cdom = getPlaceBox(j, k);
         if (cdom.hasClass("timetable_filled")) {
           if (res[j][k] != null) {
+            // 科目名が保存データと一致するときのみ読込
             if (cdom.find("tr").first().text().trim() == res[j][k].name) {
               if (res[j][k].place != null) cdom.find(".class_place").text(res[j][k].place);
             } else {
-              console.log("TimeTable ReLoad");
               loadDataFromSyllabus(j, k);
             }
           } else {
-            console.log("TimeTable ReLoad");
+            // 新しくコマが入ってたときはシラバスから読込
             loadDataFromSyllabus(j, k);
           }
         }
@@ -180,6 +202,34 @@ function loadSavedTimeTable() {
   });
 }
 
+// クイックアクションリンクの設定
+function setQuickActionLink() {
+  var SURL_PATTERN = /(\/student\/.+\/support\/)top\?no=(\d+).*/;
+  for (var j = 0; j < 5; j++) {     //月〜金
+    for (var k = 0; k < 5; k++) {   //1〜5限
+      var cdom = getPlaceBox(j, k);
+      if (cdom.hasClass("timetable_filled")) {
+        var surl = cdom.find("a").first().attr("href");
+        var urlMatch = surl.match(SURL_PATTERN);
+        if (urlMatch != null) {
+          var sBaseUrl = urlMatch[1];
+          var sNo = urlMatch[2];
+          cdom.find(".tip_a_ref").attr("href", sBaseUrl + "lecture_material_list?no=" + sNo);
+          cdom.find(".tip_a_report").attr("href", sBaseUrl + "report_list?no=" + sNo);
+          cdom.find(".tip_a_info").attr("href", sBaseUrl + "course_mail_list?no=" + sNo);
+        }
+      }
+    }
+  }
+}
+
+function addMyDepButton() {
+  console.log("Add MyDepButton");
+  $(".menu").append('<a href="" class="my_department">My部局</a>');
+  $(".menu").append('<a href="" class="my_department_reg">My部局を登録</a>');
+}
+
+// URLの相対パス→絶対パス変換
 function getAbsolutePath(path) {
   var baseUrl = location.href;
   var url = new URL(path, baseUrl);

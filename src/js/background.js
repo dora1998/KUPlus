@@ -9,7 +9,7 @@ function onRequest( request, sender, callback ) {
       for(var j = 0; j < 5; j++) {
         data[j] = new Array(5);
       }
-    };
+    }
     data[request.day][request.c] = {"name": request.name, "place": request.place};
     localStorage['timetable'] = JSON.stringify(data);
     console.log("Saved Day:" + request.day + " Class:" + request.c + " Name:" + request.name + " Place:" + request.place);
