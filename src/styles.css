@@ -12,7 +12,7 @@
 .tip_timetable {
     width: 170px;
     padding: 0.5em 0.7em;
-    bottom: 100px;
+    bottom: 100%;
     left: -30px;
 }
 .tip_timetable li {
@@ -54,18 +54,20 @@ iframe.s_detail {
 }
 
 .my_department {
-    width: 100%;
+    width: 98%;
     display: block;
     margin: 4px 0;
 
     text-align: center;
     background: #eee;
+    border: 1px solid #aaa;
     color: #000;
     font-size: 1.5em;
     text-decoration: none;
 }
 .my_department:hover {
     background-color: #333;
+    border: 1px solid #fff;
     color: #fff;
 }
 .my_department_reg {
@@ -77,4 +79,7 @@ iframe.s_detail {
     color: #000;
     font-weight: bold;
     text-decoration: none;
+}
+.my_department_reg:hover {
+    color: #fff;
 }

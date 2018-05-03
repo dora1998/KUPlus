@@ -8,7 +8,7 @@
         {
             "run_at": "document_end"
           , "matches": [
-              "https://www.k.kyoto-u.ac.jp/student/la/*"
+              "https://www.k.kyoto-u.ac.jp/student/*"
             ]
            ,"js": [
                 "lib/jquery-3.3.1.min.js"

@@ -5,6 +5,7 @@ function init() {
   var P_SURL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/syllabus.*/;
   var P_NOTICE = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/notice.*/;
   var P_DEPTOP = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/department_home\/top/;
+  var P_TTKAKUTEI = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/entry\/(zenki|koki|kouki)/;
   if (location.href.match(P_SURL) != null) {
     $("a").click(function() {
       if ($(this).attr("href").startsWith("detail")) {
@@ -15,6 +16,9 @@ function init() {
     decoTimeTable();
   } else if (location.href == "https://www.k.kyoto-u.ac.jp/student/la/timeslot/timeslot_list") {
     initTimeTable();
+  } else if (location.href.match(P_TTKAKUTEI) != null) {
+    console.log("KakuteiTTPage");
+    setQuickActionLink(true);
   }
 
   if (location.href.match(P_NOTICE) != null || location.href.match(P_DEPTOP) != null) {
@@ -77,20 +81,8 @@ function initTimeTable() {
   });
   // 教室場所表示用tr生成
   $(".timetable_filled").find("tr").after('<tr class="class_place"></tr>');
-  // クイックアクション用div生成
-  $(".timetable_filled").css("position", "relative");
-  $(".timetable_filled").append('<div class="tip_timetable">' + 
-    '<ul><li><a href="" class="tip_a_ref"><img src="/img/button_mini_general_01.gif">授業資料</a></li>' +
-    '<ul><li><a href="" class="tip_a_report"><img src="/img/button_mini_general_01.gif">レポート</a></li>' +
-    '<ul><li><a href="" class="tip_a_info"><img src="/img/button_mini_general_01.gif">授業連絡</a></li>' +
-    '</ul></div>');
-  $(".timetable_filled").hover(function() {
-    $(this).children(".tip_timetable").show();
-  }, function() {
-    $(this).children(".tip_timetable").hide();
-  });
 
-  setQuickActionLink();
+  setQuickActionLink(false);
   getSavedTimeTable(function(res) {
     if (res == undefined) {
       loadNewTimeTable();
@@ -99,8 +91,18 @@ function initTimeTable() {
     }
   });
 }
+
+// 時間割各コマのtd取得。確定後の時間割はgetKPlaceBoxを使う。
 function getPlaceBox(day, c) {
-  var $tbody = $('div.content > table').eq(1).find("tbody").first();
+  var $tbody = $("div.content > table[width='660']").find("tbody").first();
+  if ($tbody == undefined) return undefined;
+  var $tday = $tbody.children("tr").eq(4+day);
+  if ($tday == undefined) return undefined;
+  var $tclass = $tday.children("td").eq(1+c);
+  return $tclass;
+}
+function getKPlaceBox(day, c) {
+  var $tbody = $("div.content > table.entry_table").find("tbody").first();
   if ($tbody == undefined) return undefined;
   var $tday = $tbody.children("tr").eq(4+day);
   if ($tday == undefined) return undefined;
@@ -202,22 +204,44 @@ function loadSavedTimeTable() {
   });
 }
 
-// クイックアクションリンクの設定
-function setQuickActionLink() {
+/* クイックアクションリンクの設定
+  isKakutei: 確定時間割か否か(bool)
+*/
+function setQuickActionLink(isKakutei) {
+  var filled_class = isKakutei ? ".entry_interest, .entry_other" : ".timetable_filled";
+  // クイックアクション用div生成
+  $(filled_class).css("position", "relative");
+  $(filled_class).append('<div class="tip_timetable">' + 
+    '<ul><li><a href="" class="tip_a_ref"><img src="/img/button_mini_general_01.gif">授業資料</a></li>' +
+    '<ul><li><a href="" class="tip_a_report"><img src="/img/button_mini_general_01.gif">レポート</a></li>' +
+    '<ul><li><a href="" class="tip_a_info"><img src="/img/button_mini_general_01.gif">授業連絡</a></li>' +
+    '</ul></div>');
+  $(filled_class).hover(function() {
+    $(this).children(".tip_timetable").show();
+  }, function() {
+    $(this).children(".tip_timetable").hide();
+  });
+
   var SURL_PATTERN = /(\/student\/.+\/support\/)top\?no=(\d+).*/;
   for (var j = 0; j < 5; j++) {     //月〜金
     for (var k = 0; k < 5; k++) {   //1〜5限
-      var cdom = getPlaceBox(j, k);
-      if (cdom.hasClass("timetable_filled")) {
-        var surl = cdom.find("a").first().attr("href");
-        var urlMatch = surl.match(SURL_PATTERN);
-        if (urlMatch != null) {
-          var sBaseUrl = urlMatch[1];
-          var sNo = urlMatch[2];
-          cdom.find(".tip_a_ref").attr("href", sBaseUrl + "lecture_material_list?no=" + sNo);
-          cdom.find(".tip_a_report").attr("href", sBaseUrl + "report_list?no=" + sNo);
-          cdom.find(".tip_a_info").attr("href", sBaseUrl + "course_mail_list?no=" + sNo);
-        }
+      var cdom;
+      if (isKakutei) {
+        cdom = getKPlaceBox(j, k);
+        if (!(cdom.hasClass("entry_interest") || cdom.hasClass("entry_other"))) continue;
+      } else {
+        cdom = getPlaceBox(j, k);
+        if (!cdom.hasClass("timetable_filled")) continue;
+      }
+
+      var surl = cdom.find("a").first().attr("href");
+      var urlMatch = surl.match(SURL_PATTERN);
+      if (urlMatch != null) {
+        var sBaseUrl = urlMatch[1];
+        var sNo = urlMatch[2];
+        cdom.find(".tip_a_ref").attr("href", sBaseUrl + "lecture_material_list?no=" + sNo);
+        cdom.find(".tip_a_report").attr("href", sBaseUrl + "report_list?no=" + sNo);
+        cdom.find(".tip_a_info").attr("href", sBaseUrl + "course_mail_list?no=" + sNo);
       }
     }
   }
@@ -226,7 +250,7 @@ function setQuickActionLink() {
 function addMyDepButton() {
   console.log("Add MyDepButton");
   $(".menu").append('<a href="" class="my_department">My部局</a>');
-  $(".menu").append('<a href="" class="my_department_reg">My部局を登録</a>');
+  $(".menu").append('<a href="" class="my_department_reg">My部局として登録</a>');
 }
 
 // URLの相対パス→絶対パス変換
