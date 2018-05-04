@@ -17,8 +17,8 @@ function init() {
   } else if (location.href == "https://www.k.kyoto-u.ac.jp/student/la/timeslot/timeslot_list") {
     initTimeTable();
   } else if (location.href.match(P_TTKAKUTEI) != null) {
-    console.log("KakuteiTTPage");
     setQuickActionLink(true);
+    addDLButton(true);
   }
 
   if (location.href.match(P_NOTICE) != null || location.href.match(P_DEPTOP) != null) {
@@ -245,6 +245,93 @@ function setQuickActionLink(isKakutei) {
       }
     }
   }
+}
+
+/* ダウンロードボタンの設定
+  isKakutei: 確定時間割か否か(bool)
+*/
+function addDLButton(isKakutei) {
+  if (isKakutei) {
+    $("div.content > table.entry_table").before('<button id="csvdl">CSV形式でダウンロード</button>');
+    $("#csvdl").click(function() {
+      downloadCSV(true);
+    })
+  } else {
+    //未実装
+  }
+}
+function downloadCSV(isKakutei) {
+  if (isKakutei == false) return; //未実装のため
+
+  //CSVに記載するデータ配列
+  var csv_array = getKCSVData();
+  var file_name = 'timetable.csv';
+
+  //配列をTAB区切り文字列に変換
+  var csv_string = "";
+  for (var i=0; i<csv_array.length; i++) {
+    csv_string += csv_array[i].join("\t");
+    csv_string += '\r\n';
+  }
+
+  //BOM追加
+  csv_string = "\ufeff" + csv_string; //UTF-16
+  console.log (csv_string);
+
+  //UTF-16に変換...(1)
+  var array = [];
+  for (var i=0; i<csv_string.length; i++){
+  array.push(csv_string.charCodeAt(i));
+  }
+  var csv_contents = new Uint16Array(array);
+
+  //ファイル作成
+  var blob = new Blob([csv_contents] , {
+    type: "text/csv;charset=utf-16;"
+  });
+
+  //ダウンロード実行...(2)
+  if (window.navigator.msSaveOrOpenBlob) {
+    //IEの場合
+    navigator.msSaveBlob(blob, file_name);
+  } else {
+    //IE以外(Chrome, Firefox)
+    var downloadLink = $('<a></a>');
+    downloadLink.attr('href', window.URL.createObjectURL(blob));
+    downloadLink.attr('download', file_name);
+    downloadLink.attr('target', '_blank');
+
+    $('body').append(downloadLink);
+    downloadLink[0].click();
+    downloadLink.remove();
+  }
+}
+function getKCSVData() {
+  var DAYARR = ['月', '火', '水', '木', '金'];
+  var csvArr = new Array(1+4*5);
+  csvArr[0] = ['', '1', '2', '3', '4', '5'];
+  for (var j = 0; j < 5; j++) {
+    for (var k = 0; k < 4; k++) {
+      csvArr[1 + j * 4 + k] = new Array(6);
+      csvArr[1 + j * 4 + k].fill('');
+    }
+    csvArr[1 + j * 4][0] = DAYARR[j];
+  }
+
+  for (var j = 0; j < 5; j++) {     //月〜金
+    for (var k = 0; k < 5; k++) {   //1〜5限
+      var cdom = getKPlaceBox(j, k);
+      if (!(cdom.hasClass("entry_interest") || cdom.hasClass("entry_other"))) continue;
+
+      csvArr[1 + j * 4][k + 1] = cdom.children("a").text().trim();
+      var textArr = cdom.html().split("<br>");
+      csvArr[1 + j * 4 + 1][k + 1] = textArr[2].trim().replace("&nbsp;", "");   // 講師名
+      csvArr[1 + j * 4 + 2][k + 1] = textArr[3].trim().replace("&nbsp;", "");   // 科目群
+      csvArr[1 + j * 4 + 3][k + 1] = textArr[4].trim().replace("&nbsp;", "");   // 教室場所
+    }
+  }
+
+  return csvArr;
 }
 
 function addMyDepButton() {
