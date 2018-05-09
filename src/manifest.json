@@ -15,7 +15,7 @@
                ,"js/main.js"
             ]
            ,"css": [
-               "styles.css"
+               "css/styles.css"
            ]
         }
     ],
@@ -24,6 +24,12 @@
           "js/background.js"
       ],
       "persistent": false
+  },
+  "browser_action": {
+    "default_icon": {
+    },
+    "default_title": "KUPlus",
+    "default_popup": "popup.html"
   }
 
 }
