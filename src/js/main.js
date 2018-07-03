@@ -6,6 +6,7 @@ function init() {
   var P_NOTICE = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/notice.*/;
   var P_DEPTOP = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/department_home\/top/;
   var P_TTKAKUTEI = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/entry\/(zenki|koki|kouki)/;
+  var P_MATERIAL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/la\/support\/lecture_material_list.*/;
   if (location.href.match(P_SURL) != null) {
     $("a").click(function() {
       if ($(this).attr("href").startsWith("detail")) {
@@ -19,6 +20,8 @@ function init() {
   } else if (location.href.match(P_TTKAKUTEI) != null) {
     setQuickActionLink(true);
     addDLButton(true);
+  } else if (location.href.match(P_MATERIAL) != null) {
+    addMaterialDLButton();
   }
 
   if (location.href.match(P_NOTICE) != null || location.href.match(P_DEPTOP) != null) {
@@ -345,4 +348,61 @@ function getAbsolutePath(path) {
   var baseUrl = location.href;
   var url = new URL(path, baseUrl);
   return url.href;
+}
+
+// 資料DLボタンの追加
+var loadMatDom = null;
+function addMaterialDLButton() {
+  // 資料ページ裏取得用iframe生成
+  $("#frame").after('<iframe id="m_frame"></iframe>');
+  $("#m_frame").on('load', function() {
+    getMaterialFileId();
+  });
+  
+  var MAT_PATTERN = /lecture_material_detail\?no=(\d+).*/;
+  var table_mlist = $(".no_scroll_list").children();
+  table_mlist.children().each(function(i, elem) {
+    if (!($(elem).hasClass("th_normal") || $(elem).hasClass("odd_normal") || $(elem).hasClass("even_normal"))) {
+      $(elem).find("td").attr("colspan", "8");
+    } else {
+      if ($(elem).hasClass("th_normal")) {
+        $(elem).append('<td width="40">&nbsp;</td>');
+      } else {
+        var matUrl = $(elem).children().eq(2).find("a").first().attr("href");
+        var urlMatch = matUrl.match(MAT_PATTERN);
+        if (urlMatch != null) {
+          $(elem).append('<td width="40"><a href="#" class="button_matdl" download>DL</a></td>');
+          $(elem).children().last().find("a").click(function() {
+            if (loadMatDom != null) {
+              alert("現在他の資料をDL処理中です。\nしばらく待ってから再度推してください。");
+              return false;
+            }
+            
+            loadMatDom = this;
+            loadMaterialPage(matUrl);
+            return false;
+          })
+        } else {
+          $(elem).append('<td width="40">&nbsp;</td>');
+        }
+      }
+    }
+  });
+}
+// 指定URL(資料ページ)をiframeでロード
+function loadMaterialPage(url) {
+  $("#m_frame").attr("src", url);
+}
+function getMaterialFileId() {
+  con = $('#m_frame').contents().find('.content');
+  if (con.length != 2) {
+    console.log(".content Length error!");
+    return;
+  }
+
+  mat_link = con.eq(1).find('a').first();
+  $(loadMatDom).attr("href", mat_link.attr("href"));
+  $(loadMatDom).off("click");
+  $(loadMatDom)[0].click();
+  loadMatDom = null;
 }

@@ -32,7 +32,7 @@
     padding: 0.3em 0.5em;
     bottom: 2.5em;
 }
-#s_frame {
+#s_frame, #m_frame {
     display: none;
 }
 
@@ -82,4 +82,21 @@ iframe.s_detail {
 }
 .my_department_reg:hover {
     color: #fff;
+}
+
+.button_matdl {
+    display: inline-block;
+    width: 90%;
+    background-color: #333;
+    border: 1px solid #fff;
+    
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+.button_matdl:hover {
+    background-color: #fff;
+    border: 1px solid #000;
+    color: #000;
 }
