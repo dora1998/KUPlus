@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 init();
 
 // 初期化、ページ判定処理
