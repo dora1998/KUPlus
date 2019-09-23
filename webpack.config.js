@@ -1,13 +1,15 @@
 const path = require('path');
+
 const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || "development",
   devtool: "inline-source-map",
   entry: {
-    main: './src/main.js',
-    popup: './src/popup.js',
-    background: './src/background.js'
+    main: path.resolve(__dirname, 'src/main.js'),
+    popup: path.resolve(__dirname, 'src/popup.js'),
+    background: path.resolve(__dirname, 'src/background.js')
   },
   output: {
     filename: 'scripts/[name].bundle.js',
@@ -15,10 +17,12 @@ module.exports = {
   },
   optimization: {
     splitChunks: {
-      chunks: "all"
+      name: 'vendor',
+      chunks: "initial",
     }
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new CopyPlugin([
       {from: './public', to: './'},
     ]),
