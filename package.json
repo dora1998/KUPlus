@@ -1,0 +1,13 @@
+{
+  "name": "KUPlus",
+  "version": "2.0.0",
+  "description": "Browser extension for students at Kyoto University",
+  "repository": "https://github.com/dora1998/KUPlus.git",
+  "author": "dora <31735614+dora1998@users.noreply.github.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9"
+  }
+}
