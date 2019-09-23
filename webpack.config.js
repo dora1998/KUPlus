@@ -2,12 +2,12 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  context: path.resolve(__dirname, 'src'),
+  mode: process.env.NODE_ENV || "development",
+  devtool: "inline-source-map",
   entry: {
-    main: './scripts/main.js',
-    popup: './scripts/popup.js',
-    background: './scripts/background.js'
+    main: './src/main.js',
+    popup: './src/popup.js',
+    background: './src/background.js'
   },
   output: {
     filename: 'scripts/[name].bundle.js',
@@ -20,10 +20,7 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin([
-      'manifest.json',
-      {from: 'icons', to: 'icons'},
-      {from: 'styles', to: 'styles'},
-      {from: 'pages', to: 'pages'},
+      {from: './public', to: './'},
     ]),
   ],
 };
