@@ -11,8 +11,9 @@ function init() {
   var P_MATERIAL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/la\/support\/lecture_material_list.*/;
   if (location.href.match(P_SURL) != null) {
     $("a").click(function() {
-      if ($(this).attr("href").startsWith("detail")) {
-        openSyllabus($(this).attr("href"), $(this));
+      const linkAttr = $(this).attr("href");
+      if (linkAttr && linkAttr.startsWith("detail")) {
+        openSyllabus(linkAttr, $(this));
         return false;
       }
     });
@@ -32,19 +33,19 @@ function init() {
 }
 
 /* シラバス検索ページ関連 */
-function openSyllabus(url, $btn) {
-  $row = $btn.parents(".odd_normal, .even_normal");
+function openSyllabus(url: string, $btn: JQuery) {
+  let $row = $btn.parents(".odd_normal, .even_normal");
 
-  fullUrl = getAbsolutePath(url);
+  const fullUrl = getAbsolutePath(url);
   $row.after('<tr class="odd_normal"><td class="table_sdetail" colspan="9">' +
-    '<iframe src="' + fullUrl + '" class="s_detail" width="1030" height="400"></iframe>' + 
-    '<button width="100" class="s_close">＞＞ 閉じる ＜＜</button>' + 
+    '<iframe src="' + fullUrl + '" class="s_detail" width="1030" height="400"></iframe>' +
+    '<button width="100" class="s_close">＞＞ 閉じる ＜＜</button>' +
     '</td></tr>');
   $(".s_close").click(function() {
     closeSyllabus($(this));
   });
 }
-function closeSyllabus($btn) {
+function closeSyllabus($btn: JQuery) {
   $btn.parents(".odd_normal, .even_normal").remove();
 }
 // 時間割チェックボックスの装飾
@@ -56,14 +57,14 @@ function decoTimeTable() {
 
     var $tt = $(".timetable_table").find("tbody");
     for (var j = 0; j < 5; j++) {
-      var $tday = $tt.children("tr").eq(1 + j);
+      const $tday = $tt.children("tr").eq(1 + j);
       for (var k = 0; k < 5; k++) {
         if (res[j][k] != null) {
-          var $tclass = $tday.children("td").eq(1 + k);
+          const $tclass = $tday.children("td").eq(1 + k);
           $tclass.attr("style", "position: relative;");
           $tclass.append('<div class="tip_class"></div>');
 
-          var tcolor = res[j][k].name.startsWith("全共") ? "#87ceeb" : "#ff7f50";
+          const tcolor = res[j][k].name.startsWith("全共") ? "#87ceeb" : "#ff7f50";
           $tclass.css('background-color', tcolor);
           $tclass.children(".tip_class").text(res[j][k].name);
         }
@@ -102,35 +103,36 @@ function initTimeTable() {
 }
 
 // 時間割各コマのtd取得。確定後の時間割はgetKPlaceBoxを使う。
-function getPlaceBox(day, c) {
-  var $tbody = $("div.content > table[width='660']").find("tbody").first();
-  if ($tbody == undefined) return undefined;
-  var $tday = $tbody.children("tr").eq(4+day);
-  if ($tday == undefined) return undefined;
-  var $tclass = $tday.children("td").eq(1+c);
+function getPlaceBox(day: number, c: number): JQuery | null {
+  const $tbody = $("div.content > table[width='660']").find("tbody").first();
+  if ($tbody == undefined) return null;
+  const $tday = $tbody.children("tr").eq(4 + day);
+  if ($tday == undefined) return null;
+  const $tclass = $tday.children("td").eq(1 + c);
   return $tclass;
 }
-function getKPlaceBox(day, c) {
-  var $tbody = $("div.content > table.entry_table").find("tbody").first();
-  if ($tbody == undefined) return undefined;
-  var $tday = $tbody.children("tr").eq(4+day);
-  if ($tday == undefined) return undefined;
-  var $tclass = $tday.children("td").eq(1+c);
+function getKPlaceBox(day: number, c: number): JQuery | null {
+  const $tbody = $("div.content > table.entry_table").find("tbody").first();
+  if ($tbody == undefined) return null;
+  const $tday = $tbody.children("tr").eq(4 + day);
+  if ($tday == undefined) return null;
+  const $tclass = $tday.children("td").eq(1 + c);
   return $tclass;
 }
-function getKPlaceBox_nojq(day, c) {
-  let tbody = document.querySelector("div.content > table.entry_table").querySelector("tbody");
+function getKPlaceBox_nojq(day: number, c: number): HTMLTableDataCellElement | null {
+  const table = document.querySelector("div.content > table.entry_table");
+  if (table === null) return null;
+  const tbody = table.querySelector("tbody");
   if (tbody == null) return null;
-  let tday = tbody.querySelectorAll("tr")[4+day];
+  const tday = tbody.querySelectorAll("tr")[4+day];
   if (tday == undefined) return null;
-  let tclass = tday.querySelectorAll("td")[1+c];
-  return tclass;
+  return tday.querySelectorAll("td")[1 + c];
 }
 
 /* キャッシュがない時の処理 */
-var loadDay = -1;
-var loadClass = -1;
-var afterLoad = undefined;
+let loadDay = -1;
+let loadClass = -1;
+let afterLoad: (() => void) | undefined = undefined;
 function loadNewTimeTable() {
   afterLoad = function () {
     setTimeout(function () {
@@ -146,12 +148,14 @@ function loadNewTimeTable() {
       }
       loadDataFromSyllabus(loadDay, loadClass);
     }, 1500);
-  }
+  };
   loadDataFromSyllabus(0, 0);
 }
 // シラバスにiframe経由でアクセスして情報取得
-function loadDataFromSyllabus(day, c) {
-  $box = getPlaceBox(day, c);
+function loadDataFromSyllabus(day: number, c: number) {
+  const $box = getPlaceBox(day, c);
+  if (!$box) return;
+
   //空きコマの場合、スルー
   if (!$box.hasClass("timetable_filled")) {
     if (afterLoad != undefined) afterLoad();
@@ -166,16 +170,19 @@ function loadDataFromSyllabus(day, c) {
 
   loadDay = day;
   loadClass = c;
-  loadSyllabus($box.find("a").first().attr("href"));
+  const syllabusUrl = $box.find("a").first().attr("href");
+  if (syllabusUrl) loadSyllabus(syllabusUrl);
 }
 // 指定URL(シラバス)をiframeでロード
-function loadSyllabus(url) {
+function loadSyllabus(url: string) {
   $("#s_frame").attr("src", url);
 }
 // iframeで読込完了後、DOMから教室取得
 function getPlaceData() {
-  $block = getPlaceBox(loadDay, loadClass);
-  place = $('#s_frame').contents().find('.standard_list').find("tr").eq(2).children().eq(4).text();
+  const $block = getPlaceBox(loadDay, loadClass);
+  if (!$block) return;
+
+  let place = $('#s_frame').contents().find('.standard_list').find("tr").eq(2).children().eq(4).text();
   place = place.trim();
   //console.log(place);
   $block.find(".class_place").text(place);
@@ -183,14 +190,14 @@ function getPlaceData() {
   if (afterLoad != undefined) afterLoad();
 }
 // localStrageに時間割データを保存
-function saveTimeTable(day, c, name, place) {
+function saveTimeTable(day: number, c: number, name: string, place: string | null) {
   chrome.runtime.sendMessage({action: "setTimeTable", day: day, c: c, name: name, place: place},
   function(response) {
   });
 }
 
 /* キャッシュから読み込む時の処理 */
-function getSavedTimeTable(callback) {
+function getSavedTimeTable(callback: (res: any) => void) {
   chrome.runtime.sendMessage({action: "getTimeTable"},
   function(response) {
     callback(response);
@@ -200,10 +207,10 @@ function loadSavedTimeTable() {
   console.log("Load from LocalStorage");
   getSavedTimeTable(function(res) {
     if (res == undefined) return;
-    for (var j = 0; j < 5; j++) {     //月〜金
-      for (var k = 0; k < 5; k++) {   //1〜5限
-        var cdom = getPlaceBox(j, k);
-        if (cdom.hasClass("timetable_filled")) {
+    for (let j = 0; j < 5; j++) {     //月〜金
+      for (let k = 0; k < 5; k++) {   //1〜5限
+        let cdom = getPlaceBox(j, k);
+        if (cdom && cdom.hasClass("timetable_filled")) {
           if (res[j][k] != null) {
             // 科目名が保存データと一致するときのみ読込
             if (cdom.find("tr").first().text().trim() == res[j][k].name) {
@@ -224,7 +231,7 @@ function loadSavedTimeTable() {
 /* クイックアクションリンクの設定
   isKakutei: 確定時間割か否か(bool)
 */
-function setQuickActionLink(isKakutei) {
+function setQuickActionLink(isKakutei: boolean) {
   var filled_class = isKakutei ? ".entry_interest, .entry_other" : ".timetable_filled";
   // クイックアクション用div生成
   $(filled_class).css("position", "relative");
@@ -239,23 +246,25 @@ function setQuickActionLink(isKakutei) {
     $(this).children(".tip_timetable").hide();
   });
 
-  var SURL_PATTERN = /(\/student\/.+\/support\/)top\?no=(\d+).*/;
-  for (var j = 0; j < 5; j++) {     //月〜金
-    for (var k = 0; k < 5; k++) {   //1〜5限
-      var cdom;
+  const SURL_PATTERN = /(\/student\/.+\/support\/)top\?no=(\d+).*/;
+  for (let j = 0; j < 5; j++) {     //月〜金
+    for (let k = 0; k < 5; k++) {   //1〜5限
+      let cdom;
       if (isKakutei) {
         cdom = getKPlaceBox(j, k);
+        if (!cdom) continue;
         if (!(cdom.hasClass("entry_interest") || cdom.hasClass("entry_other"))) continue;
       } else {
         cdom = getPlaceBox(j, k);
+        if (!cdom) continue;
         if (!cdom.hasClass("timetable_filled")) continue;
       }
 
-      var surl = cdom.find("a").first().attr("href");
-      var urlMatch = surl.match(SURL_PATTERN);
-      if (urlMatch != null) {
-        var sBaseUrl = urlMatch[1];
-        var sNo = urlMatch[2];
+      const surl = cdom.find("a").first().attr("href");
+      let urlMatch = surl ? surl.match(SURL_PATTERN) : null;
+      if (surl && urlMatch != null) {
+        const sBaseUrl = urlMatch[1];
+        const sNo = urlMatch[2];
         cdom.find(".tip_a_ref").attr("href", sBaseUrl + "lecture_material_list?no=" + sNo);
         cdom.find(".tip_a_report").attr("href", sBaseUrl + "report_list?no=" + sNo);
         cdom.find(".tip_a_info").attr("href", sBaseUrl + "course_mail_list?no=" + sNo);
@@ -267,7 +276,7 @@ function setQuickActionLink(isKakutei) {
 /* ダウンロードボタンの設定
   isKakutei: 確定時間割か否か(bool)
 */
-function addDLButton(isKakutei) {
+function addDLButton(isKakutei: boolean) {
   if (isKakutei) {
     $("div.content > table.entry_table").before('<button id="csvdl">ics形式でダウンロード</button>');
     $("#csvdl").click(function() {
@@ -277,16 +286,16 @@ function addDLButton(isKakutei) {
     //未実装
   }
 }
-function downloadCSV(isKakutei) {
-  if (isKakutei == false) return; //未実装のため
+function downloadCSV(isKakutei: boolean) {
+  if (!isKakutei) return; //未実装のため
 
   //CSVに記載するデータ配列
-  var csv_array = getKCSVData();
-  var file_name = 'timetable.csv';
+  const csv_array = getKCSVData();
+  const file_name = 'timetable.csv';
 
   //配列をTAB区切り文字列に変換
-  var csv_string = "";
-  for (var i=0; i<csv_array.length; i++) {
+  let csv_string = "";
+  for (let i=0; i<csv_array.length; i++) {
     csv_string += csv_array[i].join("\t");
     csv_string += '\r\n';
   }
@@ -296,14 +305,14 @@ function downloadCSV(isKakutei) {
   console.log (csv_string);
 
   //UTF-16に変換...(1)
-  var array = [];
-  for (var i=0; i<csv_string.length; i++){
+  const array = [];
+  for (let i=0; i<csv_string.length; i++){
   array.push(csv_string.charCodeAt(i));
   }
-  var csv_contents = new Uint16Array(array);
+  const csv_contents = new Uint16Array(array);
 
   //ファイル作成
-  var blob = new Blob([csv_contents] , {
+  const blob = new Blob([csv_contents], {
     type: "text/csv;charset=utf-16;"
   });
 
@@ -323,10 +332,10 @@ function downloadCSV(isKakutei) {
     downloadLink.remove();
   }
 }
-function downloadICS(isKakutei) {
+function downloadICS(isKakutei: boolean) {
   if (!isKakutei) return;
 
-  var timedata = {
+  const timedata: {[c in number]: string[]} = {
     0: ["084500", "101500"],
     1: ["103000", "120000"],
     2: ["130000", "143000"],
@@ -334,8 +343,8 @@ function downloadICS(isKakutei) {
     4: ["163000", "180000"]
   };
 
-  var timetable_data = getKCSVData();
-  var icsOutput = `BEGIN:VCALENDAR
+  const timetable_data = getKCSVData();
+  let icsOutput = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//github.com//dora1998
 X-WR-CALNAME:京大時間割
@@ -353,8 +362,8 @@ END:STANDARD
 END:VTIMEZONE
 `;
 
-for (var j = 0; j < 5; j++) {     //月〜金
-  for (var k = 0; k < 5; k++) {   //1〜5限
+  for (let j = 0; j < 5; j++) {     //月〜金
+  for (let k = 0; k < 5; k++) {   //1〜5限
     let class_title = timetable_data[1 + j * 4][k + 1];
     let class_place = timetable_data[1 + j * 4 + 3][k + 1];
     if (class_title === "") continue;
@@ -378,24 +387,28 @@ END:VEVENT
   return icsOutput;
 }
 function getKCSVData() {
-  var DAYARR = ['月', '火', '水', '木', '金'];
-  var csvArr = new Array(1+4*5);
+  const DAYARR = ['月', '火', '水', '木', '金'];
+  const csvArr = new Array(1 + 4 * 5);
   csvArr[0] = ['', '1', '2', '3', '4', '5'];
-  for (var j = 0; j < 5; j++) {
-    for (var k = 0; k < 4; k++) {
+  for (let j = 0; j < 5; j++) {
+    for (let k = 0; k < 4; k++) {
       csvArr[1 + j * 4 + k] = new Array(6);
       csvArr[1 + j * 4 + k].fill('');
     }
     csvArr[1 + j * 4][0] = DAYARR[j];
   }
 
-  for (var j = 0; j < 5; j++) {     //月〜金
-    for (var k = 0; k < 5; k++) {   //1〜5限
-      var cdom = getKPlaceBox_nojq(j, k);
+  for (let j = 0; j < 5; j++) {     //月〜金
+    for (let k = 0; k < 5; k++) {   //1〜5限
+      const cdom = getKPlaceBox_nojq(j, k);
+      if (!cdom) continue;
       if (!(cdom.classList.contains("entry_interest") || cdom.classList.contains("entry_other"))) continue;
 
-      csvArr[1 + j * 4][k + 1] = cdom.querySelector("a").textContent.trim();
-      var textArr = cdom.innerText.split("\n");
+      const linkElement = cdom.querySelector("a");
+      if (!linkElement || !linkElement.textContent) continue;
+
+      csvArr[1 + j * 4][k + 1] = linkElement.textContent.trim();
+      const textArr = cdom.innerText.split("\n");
       csvArr[1 + j * 4 + 1][k + 1] = textArr[2].trim().replace("&nbsp;", "");   // 講師名
       csvArr[1 + j * 4 + 2][k + 1] = textArr[3].trim().replace("&nbsp;", "");   // 科目群
       csvArr[1 + j * 4 + 3][k + 1] = textArr[4].trim().replace("&nbsp;", "");   // 教室場所
@@ -412,23 +425,23 @@ function addMyDepButton() {
 }
 
 // URLの相対パス→絶対パス変換
-function getAbsolutePath(path) {
-  var baseUrl = location.href;
-  var url = new URL(path, baseUrl);
+function getAbsolutePath(path: string) {
+  const baseUrl = location.href;
+  const url = new URL(path, baseUrl);
   return url.href;
 }
 
 // 資料DLボタンの追加
-var loadMatDom = null;
+let loadMatDom: HTMLElement | null = null;
 function addMaterialDLButton() {
   // 資料ページ裏取得用iframe生成
   $("#frame").after('<iframe id="m_frame"></iframe>');
   $("#m_frame").on('load', function() {
     getMaterialFileId();
   });
-  
-  var MAT_PATTERN = /lecture_material_detail\?no=(\d+).*/;
-  var table_mlist = $(".no_scroll_list").children();
+
+  const MAT_PATTERN = /lecture_material_detail\?no=(\d+).*/;
+  const table_mlist = $(".no_scroll_list").children();
   table_mlist.children().each(function(i, elem) {
     if (!($(elem).hasClass("th_normal") || $(elem).hasClass("odd_normal") || $(elem).hasClass("even_normal"))) {
       $(elem).find("td").attr("colspan", "8");
@@ -436,9 +449,9 @@ function addMaterialDLButton() {
       if ($(elem).hasClass("th_normal")) {
         $(elem).append('<td width="40">&nbsp;</td>');
       } else {
-        var matUrl = $(elem).children().eq(2).find("a").first().attr("href");
-        var urlMatch = matUrl.match(MAT_PATTERN);
-        if (urlMatch != null) {
+        const matUrl = $(elem).children().eq(2).find("a").first().attr("href");
+        const urlMatch = matUrl ? matUrl.match(MAT_PATTERN) : null;
+        if (urlMatch !== null) {
           $(elem).append('<td width="40"><a href="#" class="button_matdl" download>DL</a></td>');
           $(elem).children().last().find("a").click(function() {
             if (loadMatDom != null) {
@@ -447,7 +460,7 @@ function addMaterialDLButton() {
             }
             
             loadMatDom = this;
-            loadMaterialPage(matUrl);
+            loadMaterialPage(matUrl!);
             return false;
           })
         } else {
@@ -458,17 +471,19 @@ function addMaterialDLButton() {
   });
 }
 // 指定URL(資料ページ)をiframeでロード
-function loadMaterialPage(url) {
+function loadMaterialPage(url: string) {
   $("#m_frame").attr("src", url);
 }
 function getMaterialFileId() {
-  con = $('#m_frame').contents().find('.content');
+  if (!loadMatDom) return;
+
+  const con = $('#m_frame').contents().find('.content');
   if (con.length != 2) {
     console.log(".content Length error!");
     return;
   }
 
-  mat_link = con.eq(1).find('a').first();
+  const mat_link = con.eq(1).find('a').first();
   $(loadMatDom).attr("href", mat_link.attr("href"));
   $(loadMatDom).off("click");
   $(loadMatDom)[0].click();

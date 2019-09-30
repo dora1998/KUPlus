@@ -7,9 +7,9 @@ module.exports = {
   mode: process.env.NODE_ENV || "development",
   devtool: "inline-source-map",
   entry: {
-    main: path.resolve(__dirname, 'src/main.js'),
+    main: path.resolve(__dirname, 'src/main.ts'),
     popup: path.resolve(__dirname, 'src/popup.ts'),
-    background: path.resolve(__dirname, 'src/background.js')
+    background: path.resolve(__dirname, 'src/background.ts')
   },
   output: {
     filename: 'scripts/[name].bundle.js',
