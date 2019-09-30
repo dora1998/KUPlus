@@ -8,7 +8,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     main: path.resolve(__dirname, 'src/main.js'),
-    popup: path.resolve(__dirname, 'src/popup.js'),
+    popup: path.resolve(__dirname, 'src/popup.ts'),
     background: path.resolve(__dirname, 'src/background.js')
   },
   output: {
@@ -20,6 +20,18 @@ module.exports = {
       name: 'vendor',
       chunks: "initial",
     }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
   },
   plugins: [
     new CleanWebpackPlugin(),
