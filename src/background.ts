@@ -1,4 +1,8 @@
-function onRequest( request, sender, callback ) {
+import MessageSender = chrome.runtime.MessageSender;
+
+const LOCALSTORAGE_TIMETABLE = 'timetable';
+
+function onRequest( request: any, sender: MessageSender, callback: (response?: any) => void ) {
   if (request.action == 'getTimeTable') {
     console.log("getTimeTable");
     callback(getTimeTable());
@@ -11,12 +15,12 @@ function onRequest( request, sender, callback ) {
       }
     }
     data[request.day][request.c] = {"name": request.name, "place": request.place};
-    localStorage['timetable'] = JSON.stringify(data);
+    localStorage[LOCALSTORAGE_TIMETABLE] = JSON.stringify(data);
     console.log("Saved Day:" + request.day + " Class:" + request.c + " Name:" + request.name + " Place:" + request.place);
   }
 }
 function getTimeTable() {
-    var data = localStorage['timetable'];
+    var data = localStorage[LOCALSTORAGE_TIMETABLE];
     if (data != undefined) data = JSON.parse(data);
     return data;
 }
