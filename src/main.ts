@@ -484,7 +484,9 @@ function getMaterialFileId() {
   }
 
   const mat_link = con.eq(1).find('a').first();
-  $(loadMatDom).attr("href", mat_link.attr("href"));
+  const mat_href = mat_link.attr("href");
+  if (!mat_href) return;
+  $(loadMatDom).attr("href", mat_href);
   $(loadMatDom).off("click");
   $(loadMatDom)[0].click();
   loadMatDom = null;
