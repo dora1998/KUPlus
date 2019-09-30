@@ -21,6 +21,18 @@ module.exports = {
       chunks: "initial",
     }
   },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new CopyPlugin([
