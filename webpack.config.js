@@ -8,7 +8,7 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     main: path.resolve(__dirname, 'src/main.js'),
-    popup: path.resolve(__dirname, 'src/popup.js'),
+    popup: path.resolve(__dirname, 'src/popup.ts'),
     background: path.resolve(__dirname, 'src/background.js')
   },
   output: {
