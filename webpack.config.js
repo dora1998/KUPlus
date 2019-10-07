@@ -34,7 +34,6 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new CopyPlugin([
       {from: './public', to: './'},
     ]),
