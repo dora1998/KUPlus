@@ -26,6 +26,7 @@ https://chrome.google.com/webstore/detail/obeghdnflgepdemhcnkmbnojlcbdlenl/
 ## v2.0.0
 * シラバス小窓の廃止
 * `chrome://newtab/` でポップアップクリック時に新規タブを開かないように変更
+* My部局ボタンを削除
 * (開発環境を一新)
 
 ## v1.1.0
