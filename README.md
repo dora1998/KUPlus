@@ -38,5 +38,5 @@ https://chrome.google.com/webstore/detail/obeghdnflgepdemhcnkmbnojlcbdlenl/
 
 # お問い合わせ
 本拡張機能に関するお問い合わせは、
-[@\_dorayaki\_](https://twitter.com/_dorayaki_)
+[@d0ra1998](https://twitter.com/d0ra1998)
 までリプライ又はDMなどでお願いします。
