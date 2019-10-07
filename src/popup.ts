@@ -1,8 +1,9 @@
-import $ from 'jquery';
-
-$(function() {
-    $(".container button").click(function() {
-        chrome.tabs.create({"url": $(this).attr("href")});
-        return false;
+window.onload = () => {
+  document.querySelectorAll(".container button").forEach((b) => {
+    b.addEventListener('click', (e) => {
+      const url = b.getAttribute("href") || 'http://www.kyoto-u.ac.jp';
+      chrome.tabs.create({url});
+      return false;
     });
-});
+  });
+};
