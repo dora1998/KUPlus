@@ -16,7 +16,6 @@ function init() {
     initTimeTable();
   } else if (location.href.match(P_TTKAKUTEI) != null) {
     setQuickActionLink(true);
-    addDLButton(true);
   } else if (location.href.match(P_MATERIAL) != null) {
     addMaterialDLButton();
   }
