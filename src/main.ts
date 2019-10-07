@@ -1,7 +1,5 @@
 import $ from "jquery";
 
-init();
-
 // 初期化、ページ判定処理
 function init() {
   const P_SURL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/syllabus.*/;
@@ -21,13 +19,6 @@ function init() {
     addDLButton(true);
   } else if (location.href.match(P_MATERIAL) != null) {
     addMaterialDLButton();
-  }
-
-  if (
-    location.href.match(P_NOTICE) != null ||
-    location.href.match(P_DEPTOP) != null
-  ) {
-    addMyDepButton();
   }
 }
 
@@ -509,14 +500,6 @@ function getKCSVData() {
   return csvArr;
 }
 
-function addMyDepButton() {
-  console.log("Add MyDepButton");
-  $(".menu").append('<a href="" class="my_department">My部局</a>');
-  $(".menu").append(
-    '<a href="" class="my_department_reg">My部局として登録</a>'
-  );
-}
-
 // URLの相対パス→絶対パス変換
 function getAbsolutePath(path: string) {
   const baseUrl = location.href;
@@ -610,3 +593,5 @@ function getMaterialFileId() {
   $(loadMatDom)[0].click();
   loadMatDom = null;
 }
+
+init();
