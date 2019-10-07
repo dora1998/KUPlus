@@ -9,13 +9,21 @@
   "scripts": {
     "build": "webpack",
     "build:prod": "webpack --mode=production",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "lint": "eslint src/*.ts",
+    "lint:fix": "eslint --fix src/*.ts"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.89",
     "@types/jquery": "^3.3.31",
+    "@typescript-eslint/eslint-plugin": "^2.3.2",
+    "@typescript-eslint/parser": "^2.3.2",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.0.4",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.18.2",
     "ts-loader": "^6.2.0",
     "typescript": "^3.6.3",
     "webpack": "^4.40.2",
