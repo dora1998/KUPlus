@@ -1,0 +1,44 @@
+{
+  "name": "KUPlus (くーぷら)",
+  "description": "KULASISなどの京大学務システムの機能を拡張する非公式拡張機能です。本拡張機能を使用したことによる損害に対して一切責任を負いません。自己責任で使用してください。",
+  "version": "2.0.0",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/icon_16.png",
+    "48": "icons/icon_48.png",
+    "128": "icons/icon_128.png"
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "matches": [
+        "https://www.k.kyoto-u.ac.jp/student/*"
+      ],
+      "js": [
+        "scripts/vendor.bundle.js",
+        "scripts/main.bundle.js"
+      ],
+      "css": [
+        "styles/styles.css"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "scripts/background.bundle.js"
+    ],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/icon_16.png",
+      "48": "icons/icon_48.png",
+      "128": "icons/icon_128.png"
+    },
+    "default_title": "KUPlus",
+    "default_popup": "pages/popup.html"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
