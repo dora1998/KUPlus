@@ -10,13 +10,6 @@ function init() {
   const P_TTKAKUTEI = /https:\/\/www.k.kyoto-u.ac.jp\/student\/.+\/entry\/(zenki|koki|kouki)/;
   const P_MATERIAL = /https:\/\/www.k.kyoto-u.ac.jp\/student\/la\/support\/lecture_material_list.*/;
   if (location.href.match(P_SURL) != null) {
-    $("a").click(function() {
-      const linkAttr = $(this).attr("href");
-      if (linkAttr && linkAttr.startsWith("detail")) {
-        openSyllabus(linkAttr, $(this));
-        return false;
-      }
-    });
     decoTimeTable();
   } else if (
     location.href ==
@@ -39,25 +32,6 @@ function init() {
 }
 
 /* シラバス検索ページ関連 */
-function openSyllabus(url: string, $btn: JQuery) {
-  const $row = $btn.parents(".odd_normal, .even_normal");
-
-  const fullUrl = getAbsolutePath(url);
-  $row.after(
-    '<tr class="odd_normal"><td class="table_sdetail" colspan="9">' +
-      '<iframe src="' +
-      fullUrl +
-      '" class="s_detail" width="1030" height="400"></iframe>' +
-      '<button width="100" class="s_close">＞＞ 閉じる ＜＜</button>' +
-      "</td></tr>"
-  );
-  $(".s_close").click(function() {
-    closeSyllabus($(this));
-  });
-}
-function closeSyllabus($btn: JQuery) {
-  $btn.parents(".odd_normal, .even_normal").remove();
-}
 // 時間割チェックボックスの装飾
 function decoTimeTable() {
   console.log("decoTimeTable");
