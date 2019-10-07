@@ -36,5 +36,8 @@
     },
     "default_title": "KUPlus",
     "default_popup": "pages/popup.html"
-  }
+  },
+  "permissions": [
+    "tabs"
+  ]
 }
