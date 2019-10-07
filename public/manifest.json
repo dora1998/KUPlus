@@ -15,6 +15,7 @@
         "https://www.k.kyoto-u.ac.jp/student/*"
       ],
       "js": [
+        "scripts/vendor.bundle.js",
         "scripts/main.bundle.js"
       ],
       "css": [
