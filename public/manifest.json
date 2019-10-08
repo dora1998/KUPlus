@@ -16,7 +16,7 @@
       ],
       "js": [
         "scripts/vendor.bundle.js",
-        "scripts/main.bundle.js"
+        "scripts/content_scripts.bundle.js"
       ],
       "css": [
         "styles/styles.css"

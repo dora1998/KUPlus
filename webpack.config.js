@@ -6,9 +6,10 @@ module.exports = (env, argv) => ({
   mode: process.env.NODE_ENV || "development",
   devtool: argv.mode === "development" ? "inline-source-map" : false,
   entry: {
-    main: path.resolve(__dirname, "src/main.ts"),
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    content_scripts: path.resolve(__dirname, "src/content_scripts/index.ts"),
     popup: path.resolve(__dirname, "src/popup.ts"),
-    background: path.resolve(__dirname, "src/background.ts")
+    background: path.resolve(__dirname, "src/background/index.ts")
   },
   output: {
     filename: "scripts/[name].bundle.js",

@@ -7,9 +7,9 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --mode=development",
     "build:prod": "webpack --mode=production && web-ext build --overwrite-dest --source-dir ./build/",
-    "watch": "webpack --watch",
+    "watch": "webpack --mode=development --watch",
     "lint": "eslint src/*.ts",
     "lint:fix": "eslint --fix src/*.ts",
     "start:firefox": "web-ext run --source-dir ./dist/"
