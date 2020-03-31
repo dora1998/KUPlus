@@ -20,9 +20,7 @@ function init() {
     addMaterialDLButton()
   }
 
-  if (location.href.match(P_TOP)) {
-    checkModal()
-  }
+  checkModal()
 }
 
 async function checkModal() {
